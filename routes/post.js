@@ -6,7 +6,7 @@ const {
   postLike,
   updatePost,
   addComment,
-} = require("../controllers/Post");
+} = require("../controllers/postController");
 
 const { verifyToken } = require("../middleware/verifyToken");
 

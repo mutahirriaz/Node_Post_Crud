@@ -4,7 +4,7 @@ const {
   login,
   getuser,
   followRequest,
-} = require("../controllers/Controller");
+} = require("../controllers/authController");
 const { verifyToken } = require("../middleware/verifyToken");
 const { adminAuthorization } = require("../middleware/adminToken");
 
