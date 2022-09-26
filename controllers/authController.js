@@ -11,11 +11,16 @@ exports.register = async (req, res) => {
     password,
   });
 
-  try {
-    const user = await newUser.save();
-    res.status(200).json(user);
-  } catch (e) {
-    console.log(e);
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    try {
+      const user = await newUser.save();
+      res.status(200).json(user);
+    } catch (e) {
+      console.log(e);
+    }
+  } else {
+    res.status(500).json("Email Already used");
   }
 };
 

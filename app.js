@@ -24,7 +24,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use("/api", user);
+app.use("/auth", user);
 app.use("/user", post);
 
 app.listen(process.env.PORT || 4000, () => {
