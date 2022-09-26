@@ -55,12 +55,75 @@ exports.getuser = async (req, res) => {
 
 exports.followRequest = async (req, res) => {
   try {
-    const follow = await User.findByIdAndUpdate(
+    const forFollowers = await User.findByIdAndUpdate(
       { _id: req.body.id },
       { $push: { followers: { userId: req.user.id } } }
+    );
+
+    const forFollowing = await User.findByIdAndUpdate(
+      { _id: req.user.id },
+      { $push: { folowing: { userId: req.body.id } } }
     );
     return res.status(200).json("Follow Successfully");
   } catch (e) {
     console.log(e);
   }
 };
+
+exports.getFollowersFollowing = async (req, res) => {
+  try {
+    const user = await User.findById({ _id: req.body.id });
+    !user && res.status(500).json("User Not Found");
+    let followers = [];
+    let following = [];
+    console.log("user", user.followers[0]);
+    if (user !== null) {
+      user.followers &&
+        user.followers.forEach((item) => {
+          followers.push(item.userId);
+        });
+
+      user.folowing &&
+        user.folowing.forEach((item) => {
+          following.push(item.userId);
+        });
+
+      // console.log("followinf", user.folowing);
+    }
+    let yourFollowers = await User.find(
+      { _id: { $in: followers } },
+      { _id: 1, userName: 1 }
+    );
+
+    let yourFollowing = await User.find(
+      { _id: { $in: following } },
+      { _id: 1, userName: 1 }
+    );
+
+    let newObj = {};
+    newObj.userFollowers = yourFollowers;
+    newObj.yourFollowing = yourFollowing;
+    res.status(200).json({
+      status: "Success",
+      Data: newObj,
+    });
+  } catch (e) {
+    return res.status(400).json({
+      status: "failed",
+      message: "error",
+      error: e,
+    });
+  }
+};
+
+// exports.followingRequest = async (req, res) => {
+//   try {
+//     const folowing = await User.findByIdAndUpdate(
+//       { _id: req.body.id },
+//       { $push: { folowing: { userId: req.user.id } } }
+//     );
+//     return res.status(200).json("Following Successfully");
+//   } catch (e) {
+//     console.log(e);
+//   }
+// };
