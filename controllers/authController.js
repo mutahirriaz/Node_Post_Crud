@@ -50,7 +50,6 @@ exports.login = async (req, res) => {
 
 // For getting the User
 exports.getuser = async (req, res) => {
-  // console.log("user");
   const user = await User.find();
   return res.status(200).json({ user });
 };
