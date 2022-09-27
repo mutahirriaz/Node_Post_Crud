@@ -53,7 +53,6 @@ exports.getuser = async (req, res) => {
   // console.log("user");
   const user = await User.find();
   return res.status(200).json({ user });
-  // console.log("user", user);
 };
 
 // For Follo and Following the User
@@ -93,7 +92,7 @@ exports.getFollowersFollowing = async (req, res) => {
           following.push(item.userId);
         });
 
-      // console.log("followinf", user.folowing);
+      // console.log("following", user.folowing);
     }
     let yourFollowers = await User.find(
       { _id: { $in: followers } },
