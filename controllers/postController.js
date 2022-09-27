@@ -98,6 +98,26 @@ exports.addComment = async (req, res) => {
         $push: { comments: { comment: req.body.comment, userId: req.user.id } },
       }
     );
+    return res.status(200).json({
+      message: "comment add Successfully",
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+// For adding the specific comment to a specific post
+exports.deleteComment = async (req, res) => {
+  try {
+    const comment = await Post.findByIdAndUpdate(
+      { _id: req.body.id },
+      {
+        $pull: { comments: { _id: req.body.commentId } },
+      }
+    );
+    return res.status(200).json({
+      message: "comment delete Successfully",
+    });
   } catch (e) {
     console.log(e);
   }
