@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
+// For Register the User
 exports.register = async (req, res) => {
   const { userName, mobile, email, password } = req.body;
 
@@ -24,6 +25,7 @@ exports.register = async (req, res) => {
   }
 };
 
+// For Login the User
 exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -46,6 +48,7 @@ exports.login = async (req, res) => {
   }
 };
 
+// For getting the User
 exports.getuser = async (req, res) => {
   // console.log("user");
   const user = await User.find();
@@ -53,6 +56,7 @@ exports.getuser = async (req, res) => {
   // console.log("user", user);
 };
 
+// For Follo and Following the User
 exports.followRequest = async (req, res) => {
   try {
     const forFollowers = await User.findByIdAndUpdate(
@@ -70,6 +74,7 @@ exports.followRequest = async (req, res) => {
   }
 };
 
+// For getting the Following and Followers Users
 exports.getFollowersFollowing = async (req, res) => {
   try {
     const user = await User.findById({ _id: req.body.id });
@@ -115,15 +120,3 @@ exports.getFollowersFollowing = async (req, res) => {
     });
   }
 };
-
-// exports.followingRequest = async (req, res) => {
-//   try {
-//     const folowing = await User.findByIdAndUpdate(
-//       { _id: req.body.id },
-//       { $push: { folowing: { userId: req.user.id } } }
-//     );
-//     return res.status(200).json("Following Successfully");
-//   } catch (e) {
-//     console.log(e);
-//   }
-// };

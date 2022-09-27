@@ -1,5 +1,6 @@
 const Post = require("../models/posts");
 
+// For creating a Post
 exports.addPost = async (req, res) => {
   const { title, description, image, postStatus } = req.body;
   const newUser = new Post({
@@ -18,6 +19,7 @@ exports.addPost = async (req, res) => {
   }
 };
 
+// For getting the post
 exports.getPosts = async (req, res) => {
   try {
     const getPost = await Post.find({ userId: req.user.id });
@@ -29,6 +31,7 @@ exports.getPosts = async (req, res) => {
   }
 };
 
+// For updating the Post
 exports.updatePost = async (req, res) => {
   try {
     const updatePost = await Post.findByIdAndUpdate(
@@ -41,6 +44,7 @@ exports.updatePost = async (req, res) => {
   }
 };
 
+// For deleting the Post
 exports.deletePost = async (req, res) => {
   try {
     const deletePost = await Post.findOneAndRemove({ _id: req.body.id });
@@ -50,6 +54,7 @@ exports.deletePost = async (req, res) => {
   }
 };
 
+// For Liking the Post
 exports.postLike = async (req, res) => {
   const postUser = await Post.findById({ _id: req.body.id });
   let userCondition = 0;
@@ -84,6 +89,7 @@ exports.postLike = async (req, res) => {
   }
 };
 
+// For adding the comment to a specific post
 exports.addComment = async (req, res) => {
   try {
     const comment = await Post.findByIdAndUpdate(
