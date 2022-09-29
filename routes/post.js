@@ -8,10 +8,10 @@ const {
   addComment,
   deleteComment,
 } = require("../controllers/postController");
-
 const { verifyToken } = require("../middleware/verifyToken");
+const { upload } = require("../server");
 
-router.post("/addpost", verifyToken, addPost);
+router.post("/addpost", upload.single("image"), verifyToken, addPost);
 router.post("/getposts", verifyToken, getPosts);
 router.post("/deletepost", verifyToken, deletePost);
 router.post("/postlike", verifyToken, postLike);

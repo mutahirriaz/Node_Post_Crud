@@ -42,6 +42,7 @@ exports.login = async (req, res) => {
     user.password !== req.body.password &&
       res.status(500).json("Wrong Password");
     const { password, ...others } = user._doc;
+
     res.status(200).json({ ...others, accessToken });
   } catch (e) {
     res.status(500).json(e);
@@ -54,7 +55,7 @@ exports.getuser = async (req, res) => {
   return res.status(200).json({ user });
 };
 
-// For Follo and Following the User
+// For Follow and Following the User
 exports.followRequest = async (req, res) => {
   try {
     const forFollowers = await User.findByIdAndUpdate(
@@ -72,44 +73,95 @@ exports.followRequest = async (req, res) => {
   }
 };
 
+// For UnFollow the User
+exports.unFollowRequest = async (req, res) => {
+  try {
+    const forFollowers = await User.findByIdAndUpdate(
+      { _id: req.body.id },
+      { $pull: { followers: { userId: req.user.id } } }
+    );
+
+    const forFollowing = await User.findByIdAndUpdate(
+      { _id: req.user.id },
+      { $pull: { folowing: { userId: req.body.id } } }
+    );
+    return res.status(200).json("unFollow Successfully");
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 // For getting the Following and Followers Users
 exports.getFollowersFollowing = async (req, res) => {
   try {
-    const user = await User.findById({ _id: req.body.id });
-    !user && res.status(500).json("User Not Found");
-    let followers = [];
-    let following = [];
-    console.log("user", user.followers[0]);
-    if (user !== null) {
-      user.followers &&
-        user.followers.forEach((item) => {
-          followers.push(item.userId);
-        });
+    if (req.body.followerRequest === 0) {
+      const user = await User.findById({ _id: req.body.id }).populate({
+        path: "followers.userId",
+        select: { userName: 1, email: 1 },
+      });
 
-      user.folowing &&
-        user.folowing.forEach((item) => {
-          following.push(item.userId);
-        });
+      const userFollowers = [];
 
-      // console.log("following", user.folowing);
+      user.followers.forEach((item) => {
+        userFollowers.push(item.userId);
+      });
+
+      return res.status(400).json({
+        status: "success",
+        followers: userFollowers,
+      });
+    } else {
+      const user = await User.findById({ _id: req.body.id }).populate({
+        path: "folowing.userId",
+        select: { userName: 1, email: 1 },
+      });
+
+      const userFollowing = [];
+
+      user.folowing.forEach((item) => {
+        userFollowing.push(item.userId);
+      });
+
+      return res.status(400).json({
+        status: "success",
+        following: userFollowing,
+      });
     }
-    let yourFollowers = await User.find(
-      { _id: { $in: followers } },
-      { _id: 1, userName: 1 }
-    );
 
-    let yourFollowing = await User.find(
-      { _id: { $in: following } },
-      { _id: 1, userName: 1 }
-    );
+    // const user = await User.findById({ _id: req.body.id })
+    // !user && res.status(500).json("User Not Found");
+    // let followers = [];
+    // let following = [];
+    // console.log("user", user.followers[0]);
+    // if (user !== null) {
+    //   user.followers &&
+    //     user.followers.forEach((item) => {
+    //       followers.push(item.userId);
+    //     });
 
-    let newObj = {};
-    newObj.userFollowers = yourFollowers;
-    newObj.yourFollowing = yourFollowing;
-    res.status(200).json({
-      status: "Success",
-      Data: newObj,
-    });
+    //   user.folowing &&
+    //     user.folowing.forEach((item) => {
+    //       following.push(item.userId);
+    //     });
+
+    // }
+    // let yourFollowers = await User.find(
+    //   { _id: { $in: followers } },
+    //   { _id: 1, userName: 1 }
+    // );
+
+    // let yourFollowing = await User.find(
+    //   { _id: { $in: following } },
+    //   { _id: 1, userName: 1 }
+    // );
+
+    // let newObj = {};
+    // newObj.userFollowers = yourFollowers;
+    // newObj.yourFollowing = yourFollowing;
+    // res.status(200).json({
+    //   status: "Success",
+    //   Data: newObj,
+    // });
   } catch (e) {
     return res.status(400).json({
       status: "failed",

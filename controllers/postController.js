@@ -1,18 +1,40 @@
 const Post = require("../models/posts");
+// const { client } = require("../app");
+const redis = require("redis");
+
+let = client = redis.createClient({
+  host: "127.0.0.1:6379",
+  port: 6379,
+  enableOfflineQueue: false,
+});
+
+async function start() {
+  await client.connect();
+  console.log(client.isOpen);
+}
+
+start();
 
 // For creating a Post
 exports.addPost = async (req, res) => {
-  const { title, description, image, postStatus } = req.body;
+  const { title, description, postStatus } = req.body;
   const newUser = new Post({
     title,
     description,
-    image,
+    image: req.file.path,
     postStatus,
     userId: req.user.id,
   });
 
   try {
     const post = await newUser.save();
+    await client.del(req.user.id, function (err, response) {
+      if (response == 1) {
+        console.log("Deleted Successfully!");
+      } else {
+        console.log("Cannot delete");
+      }
+    });
     res.status(200).json("Post Successfully added");
   } catch (e) {
     res.status(500).json(e);
@@ -22,12 +44,25 @@ exports.addPost = async (req, res) => {
 // For getting the post
 exports.getPosts = async (req, res) => {
   try {
-    const getPost = await Post.find({ userId: req.user.id });
+    const cachedData = await client.get(req.user.id);
+
+    if (cachedData === null) {
+      const getPost = await Post.find({ userId: req.user.id });
+      await client.set(req.user.id, JSON.stringify(getPost));
+      console.log(getPost);
+      return res.status(200).json(getPost);
+    } else {
+      res.status(200).json({
+        data: JSON.parse(cachedData),
+      });
+      console.log("cachedData", cachedData);
+    }
     // .select is used to get specific fields from documents
     // const getPost = await Post.find({ userId: req.user.id }).select("description title");
-    res.status(200).json(getPost);
+    // } else {
+    //   res.status(200).json(JSON.parse(hello));
   } catch (e) {
-    console.log(e);
+    console.log("error", e);
   }
 };
 
@@ -38,6 +73,7 @@ exports.updatePost = async (req, res) => {
       { _id: req.body.id },
       req.body
     );
+
     res.status(200).json("Post updated Successfully");
   } catch (e) {
     console.log(e);
@@ -48,6 +84,13 @@ exports.updatePost = async (req, res) => {
 exports.deletePost = async (req, res) => {
   try {
     const deletePost = await Post.findOneAndRemove({ _id: req.body.id });
+    await client.del(req.user.id, function (err, response) {
+      if (response == 1) {
+        console.log("Deleted Successfully!");
+      } else {
+        console.log("Cannot delete");
+      }
+    });
     res.status(200).json("Post deleted Successfully");
   } catch (e) {
     console.log(e);
