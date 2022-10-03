@@ -2,11 +2,13 @@ var multer = require("multer");
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // console.log(file.mimetype);
+    console.log(file.mimetype);
     if (file.mimetype === "image/jpeg" && "image/jpg" && "image/png") {
       cb(null, "./uploads/images");
     } else if (file.mimetype === "video/mp4") {
       cb(null, "./uploads/videos");
+    } else if (file.mimetype === "application/pdf") {
+      cb(null, "./uploads/pdf");
     }
   },
   filename: (req, file, callback) => {

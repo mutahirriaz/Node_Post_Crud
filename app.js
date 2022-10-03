@@ -25,14 +25,14 @@ mongoose
 app.use(cors());
 app.use(express.json());
 const __dirName = path.resolve();
-app.use("/images", express.static(path.join(__dirName, "/images")));
-app.use("/videos", express.static(path.join(__dirName, "/videos")));
+app.use("/uploads", express.static(path.join(__dirName, "/uploads")));
+app.use("/videos", express.static(path.join(__dirName, "/uploads")));
+app.use("/pdf", express.static(path.join(__dirName, "/uploads")));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/auth", user);
 app.use("/user", post);
 
-exports.client = redis.createClient(6379);
 app.listen(process.env.PORT || 4000, () => {
   console.log("Backend");
 });

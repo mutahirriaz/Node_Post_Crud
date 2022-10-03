@@ -53,7 +53,7 @@ exports.getPosts = async (req, res) => {
       return res.status(200).json(getPost);
     } else {
       res.status(200).json(JSON.parse(cachedData));
-      console.log("cachedData", cachedData);
+      // console.log("cachedData", cachedData);
     }
     // .select is used to get specific fields from documents
     // const getPost = await Post.find({ userId: req.user.id }).select("description title");
