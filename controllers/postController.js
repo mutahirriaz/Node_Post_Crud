@@ -52,9 +52,7 @@ exports.getPosts = async (req, res) => {
       console.log(getPost);
       return res.status(200).json(getPost);
     } else {
-      res.status(200).json({
-        data: JSON.parse(cachedData),
-      });
+      res.status(200).json(JSON.parse(cachedData));
       console.log("cachedData", cachedData);
     }
     // .select is used to get specific fields from documents
@@ -74,6 +72,14 @@ exports.updatePost = async (req, res) => {
       req.body
     );
 
+    await client.del(req.user.id, function (err, response) {
+      if (response == 1) {
+        console.log("Deleted Successfully!");
+      } else {
+        console.log("Cannot delete");
+      }
+    });
+
     res.status(200).json("Post updated Successfully");
   } catch (e) {
     console.log(e);
@@ -84,6 +90,7 @@ exports.updatePost = async (req, res) => {
 exports.deletePost = async (req, res) => {
   try {
     const deletePost = await Post.findOneAndRemove({ _id: req.body.id });
+
     await client.del(req.user.id, function (err, response) {
       if (response == 1) {
         console.log("Deleted Successfully!");
@@ -113,6 +120,15 @@ exports.postLike = async (req, res) => {
       { $push: { likes: { userId: req.user.id } } }
     );
     const likeCount = await Post.findById({ _id: req.body.id });
+
+    await client.del(req.user.id, function (err, response) {
+      if (response == 1) {
+        console.log("Deleted Successfully!");
+      } else {
+        console.log("Cannot delete");
+      }
+    });
+
     // console.log("hello", hello.likes.length);
     return res.status(200).json({
       likesCount: likeCount.likes.length,
@@ -124,6 +140,14 @@ exports.postLike = async (req, res) => {
       { $pull: { likes: { userId: req.user.id } } }
     );
     const likeCount = await Post.findById({ _id: req.body.id });
+
+    await client.del(req.user.id, function (err, response) {
+      if (response == 1) {
+        console.log("Deleted Successfully!");
+      } else {
+        console.log("Cannot delete");
+      }
+    });
     // console.log("hello", hello.disLikes.length);
     return res.status(200).json({
       likesCount: likeCount.likes.length,
@@ -141,6 +165,15 @@ exports.addComment = async (req, res) => {
         $push: { comments: { comment: req.body.comment, userId: req.user.id } },
       }
     );
+
+    await client.del(req.user.id, function (err, response) {
+      if (response == 1) {
+        console.log("Deleted Successfully!");
+      } else {
+        console.log("Cannot delete");
+      }
+    });
+
     return res.status(200).json({
       message: "comment add Successfully",
     });
@@ -158,6 +191,15 @@ exports.deleteComment = async (req, res) => {
         $pull: { comments: { _id: req.body.commentId } },
       }
     );
+
+    await client.del(req.user.id, function (err, response) {
+      if (response == 1) {
+        console.log("Deleted Successfully!");
+      } else {
+        console.log("Cannot delete");
+      }
+    });
+
     return res.status(200).json({
       message: "comment delete Successfully",
     });

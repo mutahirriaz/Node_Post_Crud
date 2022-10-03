@@ -1,5 +1,8 @@
 const User = require("../models/user");
+const Session = require("../models/session");
 const jwt = require("jsonwebtoken");
+const conn = require("../connection");
+const { body, validationResult } = require("express-validator");
 
 // For Register the User
 exports.register = async (req, res) => {
@@ -12,23 +15,29 @@ exports.register = async (req, res) => {
     password,
   });
 
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) {
-    try {
-      const user = await newUser.save();
-      res.status(200).json(user);
-    } catch (e) {
-      console.log(e);
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-  } else {
-    res.status(500).json("Email Already used");
+    const user = await newUser.save();
+    res.status(200).json(user);
+  } catch (e) {
+    res.status(500).json({ error: e && e.errors && e.errors.email.message });
   }
+
+  console.log("ended");
 };
 
 // For Login the User
 exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     !user && res.status(500).json("Wrong Email");
 
     const accessToken = jwt.sign(
@@ -57,20 +66,40 @@ exports.getuser = async (req, res) => {
 
 // For Follow and Following the User
 exports.followRequest = async (req, res) => {
+  // session is used to check if all mongoose function and it's response fine so its continue its working behalf
+  // of mongoose function if not so it's revert all functionality and saving data in mongodb database
+
+  const session = await conn.startSession();
+
   try {
+    session.startTransaction();
+
+    const newUser = new Session({
+      name: "Mutahir",
+    });
+
+    const user = await newUser.save({ session });
+
     const forFollowers = await User.findByIdAndUpdate(
       { _id: req.body.id },
-      { $push: { followers: { userId: req.user.id } } }
+      { $push: { followers: { userId: req.user.id } } },
+      { session }
     );
 
     const forFollowing = await User.findByIdAndUpdate(
       { _id: req.user.id },
-      { $push: { folowing: { userId: req.body.id } } }
+      { $push: { folowing: { userId: req.body.id } } },
+      { session }
     );
+
+    await session.commitTransaction();
+
     return res.status(200).json("Follow Successfully");
   } catch (e) {
+    await session.abortTransaction();
     console.log(e);
   }
+  session.endSession();
 };
 
 // For UnFollow the User
