@@ -18,6 +18,7 @@ start();
 // For creating a Post
 exports.addPost = async (req, res) => {
   const { title, description, postStatus } = req.body;
+  console.log(req.file);
   const newUser = new Post({
     title,
     description,
