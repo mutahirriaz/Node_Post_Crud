@@ -2,11 +2,14 @@ const Post = require("../models/posts");
 // const { client } = require("../app");
 const redis = require("redis");
 
-let = client = redis.createClient({
-  host: "127.0.0.1:6379",
-  port: 6379,
-  enableOfflineQueue: false,
-});
+let = client = redis
+  .createClient
+  //   {
+  //   host: "127.0.0.1:6379",
+  //   port: 6379,
+  //   enableOfflineQueue: false,
+  // }
+  ();
 
 async function start() {
   await client.connect();

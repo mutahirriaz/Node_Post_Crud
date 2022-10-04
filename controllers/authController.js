@@ -67,7 +67,7 @@ exports.getuser = async (req, res) => {
 // For Follow and Following the User
 exports.followRequest = async (req, res) => {
   // session is used to check if all mongoose function and it's response fine so its continue its working behalf
-  // of mongoose function if not so it's revert all functionality and saving data in mongodb database
+  // of mongoose function if not so it's revert all functionality and delete currently saving data in mongodb database
 
   const session = await conn.startSession();
 
