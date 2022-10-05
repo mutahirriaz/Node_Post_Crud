@@ -2,14 +2,22 @@ const Post = require("../models/posts");
 // const { client } = require("../app");
 const redis = require("redis");
 
-let = client = redis
-  .createClient
-  //   {
-  //   host: "127.0.0.1:6379",
-  //   port: 6379,
-  //   enableOfflineQueue: false,
-  // }
-  ();
+// let = client = redis.createClient({
+//   host: "redis-19359.c17.us-east-1-4.ec2.cloud.redislabs.com:19359",
+//   port: "19359",
+//   password: "ajnp7yOgRHtIHBLKTfipC0axAZB11hI6",
+//   // host: "127.0.0.1:6379",
+//   // port: 6379,
+//   enableOfflineQueue: false,
+// });
+
+let client = redis.createClient({
+  socket: {
+    host: process.env.REDIS_PORT,
+    port: "19359",
+  },
+  password: process.env.REDIS_PASSWORD,
+});
 
 async function start() {
   await client.connect();
