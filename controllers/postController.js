@@ -1,5 +1,4 @@
 const Post = require("../models/posts");
-// const { client } = require("../app");
 const redis = require("redis");
 
 // let = client = redis.createClient({
