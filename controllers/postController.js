@@ -49,6 +49,7 @@ exports.addPost = async (req, res) => {
     res.status(200).json("Post Successfully added");
   } catch (e) {
     res.status(500).json(e);
+    return res.status(500).json(e);
   }
 };
 
@@ -72,6 +73,7 @@ exports.getPosts = async (req, res) => {
     //   res.status(200).json(JSON.parse(hello));
   } catch (e) {
     console.log("error", e);
+    return res.status(500).json(e);
   }
 };
 
@@ -94,6 +96,7 @@ exports.updatePost = async (req, res) => {
     res.status(200).json("Post updated Successfully");
   } catch (e) {
     console.log(e);
+    return res.status(500).json(e);
   }
 };
 
@@ -112,6 +115,7 @@ exports.deletePost = async (req, res) => {
     res.status(200).json("Post deleted Successfully");
   } catch (e) {
     console.log(e);
+    return res.status(500).json(e);
   }
 };
 
@@ -190,6 +194,7 @@ exports.addComment = async (req, res) => {
     });
   } catch (e) {
     console.log(e);
+    return res.status(500).json(e);
   }
 };
 
@@ -216,5 +221,6 @@ exports.deleteComment = async (req, res) => {
     });
   } catch (e) {
     console.log(e);
+    return res.status(500).json(e);
   }
 };

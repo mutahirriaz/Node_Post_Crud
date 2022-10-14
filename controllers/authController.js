@@ -98,6 +98,7 @@ exports.followRequest = async (req, res) => {
   } catch (e) {
     await session.abortTransaction();
     console.log(e);
+    return res.status(500).json(e);
   }
   session.endSession();
 };
@@ -117,6 +118,7 @@ exports.unFollowRequest = async (req, res) => {
     return res.status(200).json("unFollow Successfully");
   } catch (e) {
     console.log(e);
+    return res.status(500).json(e);
   }
 };
 
